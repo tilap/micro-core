@@ -1,3 +1,5 @@
+import { ConfigurationError } from '../../core/errors';
+
 const environment = process.env.NODE_ENV || 'production';
 if (['development', 'test', 'production'].indexOf(environment) < 0) {
   throw new ConfigurationError(`Unexpected NODE_ENV environement, current value "${environment}", expect 'development', 'test' or 'production'`);
