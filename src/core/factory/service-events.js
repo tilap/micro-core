@@ -19,4 +19,4 @@ folders.forEach((folder) => {
   });
 });
 
-module.exports = (name) => services[name] ? services[name] : [];
+module.exports = (name) => (services[name] ? services[name] : []);
