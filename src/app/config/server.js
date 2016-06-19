@@ -1,4 +1,3 @@
-import { ConfigurationError } from '../../core/errors';
 import { environment, databaseMain, port, secretJwt, webUrl, logsPath } from './env.js';
 
 module.exports = {

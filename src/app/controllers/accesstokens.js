@@ -43,4 +43,20 @@ module.exports = class AccesstokensController extends Controller {
         throw new NotImplementedError(`token generator type "${type}" is not available`);
     }
   }
+
+  async createForUserId(ctx, next) {
+    const h = new KoaContextHelper(ctx);
+    const id = h.getParam('id');
+    ctx.assert(id, new ValidationError('id is required', {
+      property: 'id',
+      type: 'required',
+      message: 'id is required and must match "password"',
+    }));
+
+    const service = ctx.getService('accesstokens');
+    const { token, user } = await service.getTokenFromId(id);
+
+    ctx.apiResponse.setData({ token, user });
+    if (next) await next();
+  }
 };

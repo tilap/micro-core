@@ -8,7 +8,16 @@ module.exports = class UsersService extends ModelService {
 
   async createOne(params) {
     this.assertContextUserCan('users.create');
-    return await super.createOne(params);
+    const model = this.getModel();
+    const newItem = model(params);
+    try {
+      const item = await newItem.save();
+      this.emit('created', { user: item, validationUrl: params.validationUrl || '' });
+      return item;
+    } catch (err) {
+      this.logger.verbose(`createOne error ${err.message || err}`);
+      throw await model.cleanError(err);
+    }
   }
 
   async getById(id) {

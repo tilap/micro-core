@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import ContextService from '../../core/class/service-context';
-import { ValidationError, ForbiddenError } from '../../core/errors';
+import { ValidationError, NotFoundError, ForbiddenError } from '../../core/errors';
 
 const jwtSecret = require('../config/server').jwt.secret;
 const tokenVersion = require('../config/parameters').tokens.version;
@@ -21,6 +21,25 @@ module.exports = class AccesstokenService extends ContextService {
       err.addDetail({ property: 'email', kind: 'mismatch', message: '', name: 'ValidatorError', value: email });
       err.addDetail({ property: 'password', kind: 'mismatch', message: '', name: 'ValidatorError' });
       throw err;
+    }
+
+    this.assert(user.validated_at != null, new ForbiddenError('The account has not been validated yet'));
+    const tokenStr = this._encodeUserToken(user, 'password');
+    return { user, token: tokenStr };
+  }
+
+  async getTokenFromId(id) {
+    this.assertContextUserCan('accesstoken.createFromId');
+
+    if (!id) {
+      const err = new ValidationError('Some data are missing');
+      if (!id) err.addDetail({ property: 'id', kind: 'required', message: 'id is required' });
+      throw err;
+    }
+
+    const user = await this.getService('users').getById(id);
+    if (!user) {
+      throw new NotFoundError('email / password dont match');
     }
 
     this.assert(user.validated_at != null, new ForbiddenError('The account has not been validated yet'));

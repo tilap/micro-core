@@ -4,13 +4,12 @@ module.exports = {
   acl: {
     defaultGroup: 'default',
     groups: {
-      usersAdmin: ['users.list', 'users.create', 'users.update', 'users.delete'],
-      usersRegister: ['users.create'],
+      usersAdmin: ['users.list', 'users.create', 'users.update', 'users.delete', 'accesstoken.createFromId'],
     },
     profiles: {
       user: [],
-      admin: ['usersAdmin', 'usersRegister'],
-      default: ['usersRegister'],
+      admin: ['usersAdmin'],
+      default: [],
     },
   },
   application: {

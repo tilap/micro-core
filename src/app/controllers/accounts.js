@@ -18,8 +18,7 @@ module.exports = class AccountsController extends ServiceController {
   async validate(ctx, next) {
     const h = new KoaContextHelper(ctx);
     const service = ctx.getService('users');
-
-    const { id = '', token = '', redirect } = h.getQueries();
+    const { id = '', token = '' } = h.getQueries();
 
     this.logger.verbose(`Validate user account #${id} with token ${token}`);
 
@@ -27,7 +26,6 @@ module.exports = class AccountsController extends ServiceController {
     ctx.apiResponse.setData(updatedUser);
     ctx.setState('user', updatedUser);
 
-    if (redirect) return ctx.redirect(redirect);
     if (next) await next();
   }
 
