@@ -69,6 +69,14 @@ module.exports = class UsersService extends ModelService {
       });
     }
 
+    if (!email.match(/^\w.*@.*\..{2,}$/)) {
+      throw new ValidationError('email is required', {
+        property: 'email',
+        kind: 'required', // @tofix
+        message: 'email is not valid',
+      });
+    }
+
     const account = await super.getModel().findOne({ email });
     if (!account) {
       return false;

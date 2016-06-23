@@ -39,7 +39,7 @@ module.exports = class AccesstokensController extends Controller {
         break;
       }
       default:
-        this.logger.warn(`token generator type "${type}" is not available`);
+        this.logger.warn(`token generator type "%s" is not available`, type);
         throw new NotImplementedError(`token generator type "${type}" is not available`);
     }
   }

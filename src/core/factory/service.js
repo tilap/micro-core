@@ -51,7 +51,7 @@ module.exports = class ServiceFactory {
     Object.keys(serviceEvents).forEach((eventName) => serviceEvents[eventName].forEach((cb) => service.addEvent(eventName, cb)));
 
     // Logger
-    service.setLogger(loggerFactory('core', { message_prefix: `service ${serviceId}` }));
+    service.setLogger(loggerFactory('services', { message_prefix: `service ${serviceId}` }, { service: serviceId }));
 
     // Model
     service.setModelLoader(modelsLoader);

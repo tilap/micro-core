@@ -8,6 +8,7 @@
  * ```
  */
 import config from '../../app/config/server';
+import { application } from '../../app/config/parameters';
 import { LoggerFactory } from 'nippy-core-lib';
 import { ConfigurationError } from '../errors';
 
@@ -18,10 +19,21 @@ loggerFactory.setErrorClass(ConfigurationError);
 
 let cache = {};
 
-module.exports = (loggerId, overrideOptions = {}) => {
-  const cacheId = loggerId + JSON.stringify(overrideOptions);
+module.exports = (loggerId, overrideOptions = {}, defaultMetas = {}) => {
+  const cacheId = loggerId + JSON.stringify(overrideOptions) + JSON.stringify(defaultMetas);
   if (!cache[cacheId]) {
     cache[cacheId] = loggerFactory.get(loggerId, overrideOptions);
+    if (Object.keys(defaultMetas).length > 0) {
+      const coreMetas = {
+        app: application.name,
+        logger: loggerId,
+        user: null,
+      };
+      cache[cacheId].rewriters.push((level, msg, meta = {}) => {
+        Object.assign(meta, defaultMetas, coreMetas);
+        return meta;
+      });
+    }
   }
   return cache[cacheId];
 };

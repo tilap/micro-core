@@ -20,10 +20,27 @@ module.exports = class AccesstokenService extends ContextService {
       const err = new ValidationError('email / password dont match');
       err.addDetail({ property: 'email', kind: 'mismatch', message: '', name: 'ValidatorError', value: email });
       err.addDetail({ property: 'password', kind: 'mismatch', message: '', name: 'ValidatorError' });
+
+      this.logger.warn('Authentification error: wrong email/password', {
+        action: 'getTokenFromEmailPassword',
+        formdata: { email, password }
+      });
       throw err;
     }
 
-    this.assert(user.validated_at != null, new ForbiddenError('The account has not been validated yet'));
+    if (!user.validated_at) {
+      this.logger.warn('Authentification error: login to not validated account', {
+        action: 'getTokenFromEmailPassword',
+        formdata: { email, password },
+      });
+      throw new new ForbiddenError('The account has not been validated yet');
+    }
+
+    this.logger.info('Authentification success', {
+      action: 'getTokenFromEmailPassword',
+      user: user,
+    });
+
     const tokenStr = this._encodeUserToken(user, 'password');
     return { user, token: tokenStr };
   }
